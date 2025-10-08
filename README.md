@@ -9,4 +9,4 @@ Olá! Este é o meu projeto de automações.
 ## 💻 Como usar
 1. Baixe o repositório:
    ```bash
-   git clone https://github.com/Vib
+   
