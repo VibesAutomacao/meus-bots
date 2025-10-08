@@ -1,2 +1,12 @@
-# meus-bots
-Automaçãos criada com n8n e Docker
+🤖 Vibes Automação
+
+Olá! Este é o meu projeto de automações.
+
+## 🚀 O que ele faz
+- Roda automações criadas no n8n.
+- Usa Docker para funcionar fácil em qualquer lugar.
+
+## 💻 Como usar
+1. Baixe o repositório:
+   ```bash
+   git clone https://github.com/Vib
