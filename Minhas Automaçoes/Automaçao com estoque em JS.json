@@ -1,0 +1,563 @@
+{
+  "name": "Automaçao com estoque em JS",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "webhook",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1120,
+        16
+      ],
+      "id": "61faa784-b5d9-460a-b822-86e04397af21",
+      "name": "Webhook",
+      "webhookId": "a0b8bfea-a644-4106-886f-a2a2b377316f"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4b564691-5113-4540-bc9f-3be49886365d",
+              "name": "session",
+              "value": "={{ $json.body.session }}",
+              "type": "string"
+            },
+            {
+              "id": "a5ec73b7-8e63-40d7-92d3-7fb7cea7534a",
+              "name": "chatid",
+              "value": "={{ $json.body.payload.from }}",
+              "type": "string"
+            },
+            {
+              "id": "2dc53c6a-2e74-4d63-bee5-e3fe54394eb6",
+              "name": "pushname",
+              "value": "={{ $json.body.payload._data.Info.PushName }}",
+              "type": "string"
+            },
+            {
+              "id": "6a9c75f2-7255-4859-b1fe-ed646870ff71",
+              "name": "payload_id",
+              "value": "={{ $json.body.payload.id }}",
+              "type": "string"
+            },
+            {
+              "id": "abe12d7f-d3de-49e7-913a-ec3dff6bdbc5",
+              "name": "event",
+              "value": "={{ $json.body.event }}",
+              "type": "string"
+            },
+            {
+              "id": "463b2883-26e5-42e3-9281-8e825b8a270e",
+              "name": "menssage",
+              "value": "={{ $json.body.payload.body }}",
+              "type": "string"
+            },
+            {
+              "id": "f301a839-bcd5-4ef6-b768-000b20413160",
+              "name": "fromMe",
+              "value": "={{ $json.body.payload.fromMe }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -976,
+        16
+      ],
+      "id": "4b491331-d972-4751-9c2e-dbfe4a84e614",
+      "name": "DADOS"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.event }}",
+                    "rightValue": "=message",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "5bcff49b-1813-44f4-847c-ccdbc356b420"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "mensaagem da pessoa"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "dc3cf1d3-54d4-4929-ad27-7cd148bef55c",
+                    "leftValue": "={\n  \"pedido\": \"dipirona 1g\"\n}",
+                    "rightValue": "pedido",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -800,
+        16
+      ],
+      "id": "b612b606-a557-4c1b-99b8-2c5b22e875c7",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.resposta }}",
+        "options": {
+          "systemMessage": "=Você é um assistente de atendimento profissional de vendas, que conversa com clientes pelo WhatsApp. \nSiga estas instruções passo a passo:\n\n1️⃣ Cumprimente o cliente de forma cordial e pergunte o **nome**:\n   - Exemplo: \"Olá! Tudo bem? Qual seu nome, por favor?\"\n   - Armazene como variável: `nome_cliente`.\n\n2️⃣ Pergunte de forma clara o que o cliente está procurando hoje:\n   - Exemplo: \"O que você procura hoje?\"\n   - Armazene como variável: `pedido`.\n\n3️⃣ Use **somente informações compatíveis com o que o cliente pediu**:\n   - Se não houver informações exatas, use **opções convencionais/recomendadas** para aquele tipo de pedido.\n   - Evite sugerir produtos que não correspondam ao pedido.\n\n4️⃣ Pergunte sobre a forma de entrega:\n   - \"Você prefere receber pelo telefone/tele-entrega ou vai buscar na loja?\"\n   - Armazene como variável: `tipo_entrega`.\n\n5️⃣ Se o cliente escolheu **tele-entrega**, pergunte o **endereço**:\n   - \"Perfeito! Qual endereço devemos entregar seu pedido?\"\n   - Armaze\nVocê enviou\nne como variável: `endereco`.\n\n6️⃣ Finalize a conversa de forma profissional:\n   - Agradeça a preferência.\n   - Solicite avaliação no Google Maps, deixando **espaço para inserir o link**:\n     - Exemplo: \"Agradecemos sua preferência! Ficaremos felizes se puder nos avaliar no Maps: [INSERIR LINK AQUI]\"\n\n7️⃣ Sempre mantenha o tom **profissional, cordial e objetivo**, sem inventar informações não compatíveis com o pedido do cliente.\n\n8️⃣ Crie uma **comanda resumida do pedido** em forma de mensagem clara, incluindo:\n   - Produtos e quantidade\n   - Forma de entrega\n   - Endereço, caso seja tele-entrega\n\nExemplo de comanda:\nVocê enviou\nArmazene essa mensagem na variável: `comanda`.\n\n---\n\n**Variáveis finais que devem ser armazenadas e usadas no fluxo n8n**:\n- `nome_cliente`\n- `pedido`\n- `tipo_entrega`\n- `endereco` (se aplicável)\n- `comanda`"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -288,
+        16
+      ],
+      "id": "3a595cfb-29c4-4be4-9460-096aa7f1e323",
+      "name": "AI Agent",
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "options": {
+          "temperature": 0.4
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -416,
+        224
+      ],
+      "id": "ad6947b1-da0c-43d8-acdd-6d719b0a1c12",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "eRZ43S4BxgZOv4nM",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('DADOS').item.json.chatid }}",
+        "sessionTTL": 60,
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        -272,
+        224
+      ],
+      "id": "3648e435-22cd-47b8-945d-1b12d235b3a0",
+      "name": "Redis Chat Memory",
+      "credentials": {
+        "redis": {
+          "id": "OzA1cHBDRsYjbdEd",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Seen",
+        "session": "={{ $('DADOS').item.json.session }}",
+        "chatId": "={{ $('DADOS').item.json.chatid }}",
+        "messageId": "={{ $('DADOS').item.json.payload_id }}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-waha.WAHA",
+      "typeVersion": 202411,
+      "position": [
+        0,
+        0
+      ],
+      "id": "5fd3461b-3cf9-4051-a2f3-103c639ccddb",
+      "name": "Send Seen",
+      "credentials": {
+        "wahaApi": {
+          "id": "IilvrnxoMGRrQKIt",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Text",
+        "session": "={{ $('DADOS').item.json.session }}",
+        "chatId": "={{ $('DADOS').item.json.chatid }}",
+        "text": "={{ $('AI Agent').item.json.output }}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-waha.WAHA",
+      "typeVersion": 202411,
+      "position": [
+        208,
+        0
+      ],
+      "id": "f07416f8-793f-4cfc-8798-27f95eb82ada",
+      "name": "Send a text message",
+      "credentials": {
+        "wahaApi": {
+          "id": "IilvrnxoMGRrQKIt",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        432,
+        0
+      ],
+      "id": "9dc095b6-aa99-47f4-b871-f6c179572fc4",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "description": "Você é um assistente técnico. Gere uma descrição completa, clara e objetiva desta ferramenta de automação WhatsApp (n8n + WAHA + Agente de IA) **no formato de código JavaScript**: um objeto exportável que contenha as chaves abaixo. Use texto em português, linguagem profissional, curta e direta. Preencha cada campo com instruções práticas o suficiente para um desenvolvedor seguir.\n\nEstrutura requerida do objeto JS:\n- name: string (nome da ferramenta)\n- version: string (ex: \"1.0.0\")\n- purpose: string (descrição curta do propósito)\n- architecture: string (diagrama/explicação em texto curto do fluxo: WAHA → n8n → Agente → Set → WAHA)\n- requisitos: array de strings (Docker, Node, n8n, cloud tunnel, etc)\n- setup_steps: array de strings (passos principais para instalar e rodar)\n- endpoints: array de objetos { name, method, path, description }\n- variaveis: objeto com chaves explicando as variáveis do fluxo (nome_cliente, pedido, tipo_entrega, endereco, comanda)\n- exemplos: objeto contendo (a)\n\n\n",
+        "jsCode": "// Simulação de estoque\nconst estoque = {\n  \"paracetamol 500mg\": 10,\n  \"dipirona 1g\": 0,\n  \"ibuprofeno 400mg\": 5,\n  \"vitamina c\": 3\n};\n\n// Produto que o cliente perguntou (o Agente vai mandar isso)\nconst produto = $input.item.json.Consulta?.toLowerCase() || \"\"\n\n// Verifica se existe e monta a resposta\nlet resposta = \"\";\n\nif (estoque.hasOwnProperty(produto)) {\n  if (estoque[produto] > 0) {\n    resposta = `✅ Temos ${produto} em estoque! Pode confirmar a quantidade que deseja?`;\n  } else {\n    resposta = `⚠️ No momento estamos sem ${produto} em estoque. Deseja que te avise quando chegar?`;\n  }\n} else {\n  resposta = `❌ Não encontrei \"${produto}\" em nosso catálogo. Poderia confirmar o nome ou especificação?`;\n}\n\n// 🚨 IMPORTANTE: o retorno deve ser APENAS TEXTO, não JSON!\nreturn resposta;"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.3,
+      "position": [
+        -144,
+        224
+      ],
+      "id": "8cc80451-0360-4bbc-85ef-146735658d4d",
+      "name": "Code Tool"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Lista de produtos em estoque\nconst estoque = {\n  \"paracetamol 500mg\": 10,\n  \"dipirona 1g\": 0,\n  \"ibuprofeno 400mg\": 5,\n  \"vitamina c\": 3\n};\n\n// Pega o nome do produto do item anterior (por exemplo do Agente ou Webhook)\nconst produto = $json.pedido?.toLowerCase() || \"\";\n\n// Variável para guardar a resposta\nlet resposta = \"\";\n\n// Verifica se o produto existe e se há estoque\nif (estoque.hasOwnProperty(produto)) {\n  if (estoque[produto] > 0) {\n    resposta = `✅ Temos ${produto} em estoque! Pode confirmar a quantidade que deseja?`;\n  } else {\n    resposta = `⚠️ No momento estamos sem ${produto} em estoque. Deseja que te avise quando chegar?`;\n  }\n} else {\n  resposta = `❌ Não encontrei \"${produto}\" em nosso catálogo. Poderia confirmar o nome ou especificação?`;\n}\n\n// Retorna o resultado no formato que o n8n espera\nreturn [\n  {\n    json: {\n      produto,\n      resposta\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -592,
+        -96
+      ],
+      "id": "f066badf-33a4-4e4d-ade6-fd7ddc8de7fd",
+      "name": "Estoque e Respostas"
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "accept": "application/json, text/plain, */*",
+            "content-type": "application/json",
+            "user-agent": "WAHA/2025.9.8",
+            "x-webhook-request-id": "01K6XBAEE7SWXN7Z7CA22ZYF7G",
+            "x-webhook-timestamp": "1759774063047",
+            "content-length": "3044",
+            "accept-encoding": "gzip, compress, deflate, br",
+            "host": "host.docker.internal:5678",
+            "connection": "keep-alive"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "id": "evt_01k6xbaee7nmsg2b9e793dw1ag",
+            "timestamp": 1759774063047,
+            "event": "message",
+            "session": "default",
+            "metadata": {
+              "user.id.1": "123"
+            },
+            "me": {
+              "id": "556195728152@c.us",
+              "pushName": "Júlio C.B",
+              "lid": "264943748268037@lid",
+              "jid": "556195728152:46@s.whatsapp.net"
+            },
+            "payload": {
+              "id": "false_120363167266666830@g.us_A50B1B443F9611EB9123E1DF2D4686B4_65807975456900@lid",
+              "timestamp": 1759774062,
+              "from": "120363167266666830@g.us",
+              "fromMe": false,
+              "source": "app",
+              "body": "🪼🪼 ANA/ ADM DA ZX 🪼🪼\n🪼🪼 ANA/ ADM DA ZX 🪼🪼\n\n💧X1 MOB 5/8/10$+💧\n\n💧X2 MOB 5/10/12$+💧\n\n💧 X3 MOB 5/15$+💧\n\n💧X4 MOB 5/10/20$+💧\n\n🔥 CHAME QUE PROCURO SUAS APOSTAS  🔥 \n\n💥 VENDO SALA 💥\n\n❗❗ ADM DA ZX NÃO CHAMA NO SEU PV  ❗❗",
+              "to": "65807975456900@lid",
+              "participant": "65807975456900@lid",
+              "hasMedia": false,
+              "media": null,
+              "ack": 2,
+              "ackName": "DEVICE",
+              "replyTo": null,
+              "_data": {
+                "Info": {
+                  "Chat": "120363167266666830@g.us",
+                  "Sender": "65807975456900@lid",
+                  "IsFromMe": false,
+                  "IsGroup": true,
+                  "AddressingMode": "lid",
+                  "SenderAlt": "559299718290@s.whatsapp.net",
+                  "RecipientAlt": "",
+                  "BroadcastListOwner": "",
+                  "BroadcastRecipients": null,
+                  "ID": "A50B1B443F9611EB9123E1DF2D4686B4",
+                  "ServerID": 0,
+                  "Type": "text",
+                  "PushName": "Ana Adm",
+                  "Timestamp": "2025-10-06T18:07:42Z",
+                  "Category": "",
+                  "Multicast": false,
+                  "MediaType": "",
+                  "Edit": "",
+                  "MsgBotInfo": {
+                    "EditType": "",
+                    "EditTargetID": "",
+                    "EditSenderTimestampMS": "0001-01-01T00:00:00Z"
+                  },
+                  "MsgMetaInfo": {
+                    "TargetID": "",
+                    "TargetSender": "",
+                    "TargetChat": "",
+                    "DeprecatedLIDSession": null,
+                    "ThreadMessageID": "",
+                    "ThreadMessageSenderJID": ""
+                  },
+                  "VerifiedName": null,
+                  "DeviceSentMeta": null
+                },
+                "Message": {
+                  "extendedTextMessage": {
+                    "text": "🪼🪼 ANA/ ADM DA ZX 🪼🪼\n🪼🪼 ANA/ ADM DA ZX 🪼🪼\n\n💧X1 MOB 5/8/10$+💧\n\n💧X2 MOB 5/10/12$+💧\n\n💧 X3 MOB 5/15$+💧\n\n💧X4 MOB 5/10/20$+💧\n\n🔥 CHAME QUE PROCURO SUAS APOSTAS  🔥 \n\n💥 VENDO SALA 💥\n\n❗❗ ADM DA ZX NÃO CHAMA NO SEU PV  ❗❗",
+                    "previewType": 0,
+                    "contextInfo": {
+                      "expiration": 86400,
+                      "disappearingMode": {
+                        "initiator": 0,
+                        "trigger": 0
+                      }
+                    },
+                    "inviteLinkGroupTypeV2": 0
+                  },
+                  "messageContextInfo": {
+                    "messageSecret": "OvsIkF7q9k/HCkFSXbUlKHI5a+Itjv5WiB/y0MFyPHk="
+                  }
+                },
+                "IsEphemeral": false,
+                "IsViewOnce": false,
+                "IsViewOnceV2": false,
+                "IsViewOnceV2Extension": false,
+                "IsDocumentWithCaption": false,
+                "IsLottieSticker": false,
+                "IsBotInvoke": false,
+                "IsEdit": false,
+                "SourceWebMsg": null,
+                "UnavailableRequestID": "",
+                "RetryCount": 0,
+                "NewsletterMeta": null,
+                "RawMessage": {
+                  "extendedTextMessage": {
+                    "text": "🪼🪼 ANA/ ADM DA ZX 🪼🪼\n🪼🪼 ANA/ ADM DA ZX 🪼🪼\n\n💧X1 MOB 5/8/10$+💧\n\n💧X2 MOB 5/10/12$+💧\n\n💧 X3 MOB 5/15$+💧\n\n💧X4 MOB 5/10/20$+💧\n\n🔥 CHAME QUE PROCURO SUAS APOSTAS  🔥 \n\n💥 VENDO SALA 💥\n\n❗❗ ADM DA ZX NÃO CHAMA NO SEU PV  ❗❗",
+                    "previewType": 0,
+                    "contextInfo": {
+                      "expiration": 86400,
+                      "disappearingMode": {
+                        "initiator": 0,
+                        "trigger": 0
+                      }
+                    },
+                    "inviteLinkGroupTypeV2": 0
+                  },
+                  "messageContextInfo": {
+                    "messageSecret": "OvsIkF7q9k/HCkFSXbUlKHI5a+Itjv5WiB/y0MFyPHk="
+                  }
+                },
+                "Status": 3
+              }
+            },
+            "environment": {
+              "version": "2025.9.8",
+              "engine": "GOWS",
+              "tier": "CORE",
+              "browser": null
+            }
+          },
+          "webhookUrl": "http://host.docker.internal:5678/webhook-test/webhook",
+          "executionMode": "test"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "DADOS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DADOS": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Estoque e Respostas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send Seen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Seen": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Estoque e Respostas": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6db31c95-5375-44dd-bac1-446b772a1daf",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "39dc199a0e7b87d1abb98403fa5a208714fb48e6dc94c141d58468190b0286a3"
+  },
+  "id": "6XpHSQHeRFez2ldJ",
+  "tags": []
+}
